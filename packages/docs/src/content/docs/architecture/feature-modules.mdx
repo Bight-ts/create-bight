@@ -1,0 +1,59 @@
+---
+title: Feature Modules
+description: Group commands, interactions, and plugins by domain when flat folders stop scaling.
+---
+
+import { FileTree, Aside } from "@astrojs/starlight/components";
+
+The default layout model (A single `src/commands/` and `src/interactions/` directory) works well for small to medium bots. When you have dozens of commands across distinct product areas, grouping by **feature** is cleaner than grouping by **file type**.
+
+## Module structure
+
+A feature module bundles related logic into a single folder under `src/features/`:
+
+<FileTree>
+  - src/features/music/ - play-command.ts - skip-button.ts -
+  voice-state-event.ts - in-voice-precondition.ts - module.ts
+</FileTree>
+
+## Defining the module
+
+The `module.ts` file declares what the feature contributes to the app:
+
+```ts title="src/features/music/module.ts"
+import { defineFeature } from "@bight-ts/core";
+import { playCommand } from "./play-command";
+import { skipButton } from "./skip-button";
+
+export const musicModule = defineFeature({
+  name: "Music System",
+  commands: [playCommand],
+  buttonHandlers: [skipButton],
+});
+```
+
+A feature can include `commands`, `buttonHandlers`, `modalHandlers`, `selectMenuHandlers`, `preconditions`, `events`, and `plugins`.
+
+## Registering features
+
+Features are explicitly added in `src/features/index.ts`:
+
+```ts title="src/features/index.ts"
+import { musicModule } from "./music/module";
+import { moderationModule } from "./moderation/module";
+
+export const features = [musicModule, moderationModule];
+```
+
+There's no auto-discovery, so any developer reading this file sees every feature in the app.
+
+## When to use feature modules
+
+Migrate to feature modules when navigating flat `commands/` and `interactions/` folders requires too much mental overhead.
+
+There's no hard threshold. If you're frequently jumping between files in different parts of the tree to understand one product feature, it's time.
+
+<Aside>
+  For smaller bots, flat folders are simpler. Don't add feature modules
+  preemptively.
+</Aside>

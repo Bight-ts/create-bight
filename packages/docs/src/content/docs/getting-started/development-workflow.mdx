@@ -1,0 +1,29 @@
+---
+title: Development Workflow
+description: The local dev loop and how to iterate fast with Bight.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Local development
+
+Start the dev server with file watching:
+
+```bash
+pnpm dev
+```
+
+This watches `src/` and reloads the bot on every save. Changes to command logic, services, or interaction handlers take effect immediately without a restart.
+
+## When to redeploy commands
+
+`pnpm dev` handles runtime code changes, but Discord maintains its own cache of command metadata (names, descriptions, options). If you change any of those, you need to push the updated definitions:
+
+```bash
+pnpm deploy:commands:guild       # instant pushes to your test guild only
+```
+
+
+<Aside>You do **not** need to redeploy when changing code inside `execute()` or updating service logic.</Aside>
+
+See [Command Deploy Modes](/commands-and-interactions/command-modes/) for the full deployment strategy.

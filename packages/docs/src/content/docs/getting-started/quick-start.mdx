@@ -1,0 +1,74 @@
+---
+title: Quick Start
+description: Scaffold a Bight bot, connect it to Discord, and deploy your first command.
+---
+
+import { Steps, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Prerequisites
+
+- Node.js and `pnpm` installed
+- A Discord application with a bot token and client ID from the [Developer Portal](https://discord.com/developers/applications)
+- A test guild ID (optional, but recommended for instant command deploys during development)
+
+<Steps>
+
+1. **Scaffold the project**
+
+   ```bash
+   pnpm create bight
+   cd my-bight-bot
+   pnpm install
+   ```
+
+   The CLI walks you through storage backend selection, command mode, and optional extras. See [create-bight reference](/reference/cli/create-bight/) for all available flags.
+
+2. **Configure environment variables**
+
+   Copy the example env file and fill in your credentials:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   ```ini title=".env"
+   DISCORD_TOKEN=your-bot-token
+   DISCORD_CLIENT_ID=your-client-id
+   DISCORD_TEST_GUILD_ID=your-test-server-id   # optional
+   ```
+
+   Setting `DISCORD_TEST_GUILD_ID` lets you push command changes to a single guild instantly, bypassing Discord's global cache delay (up to an hour).
+
+3. **Start the bot**
+
+   ```bash
+   pnpm start:with-deploy
+   ```
+
+   This builds the project, registers commands with Discord, and starts the runtime. Open your test server and run `/ping`. The bot should reply correctly.
+
+   If command metadata changes aren't appearing in Discord's slash command picker, redeploy:
+
+   ```bash
+   pnpm deploy:commands:guild    # test guild only
+   pnpm deploy:commands          # global (production)
+   ```
+
+   See [Command Deploy Modes](/commands-and-interactions/command-modes/) for when to use each.
+
+</Steps>
+
+## Key directories
+
+| Path | Purpose |
+|------|---------|
+| `src/commands/` | Slash command definitions and handlers |
+| `src/interactions/` | Button, modal, and select menu handlers |
+| `src/services/` | App-owned integrations (database clients, caches, external APIs) |
+| `src/plugins/` | Lifecycle hooks (schedulers, devtools, error reporters) |
+| `src/bight.ts` | Framework entry point. Intents, discovery, runtime config |
+
+<CardGrid>
+  <LinkCard title="Project Structure" href="/getting-started/project-structure/" description="See to understand the directory layout of a Bight app." />
+  <LinkCard title="Slash Commands" href="/commands-and-interactions/slash-commands/" description="See to understand how to start creating your slash commands." />
+</CardGrid>

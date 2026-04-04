@@ -1,0 +1,32 @@
+---
+title: Why Bight
+description: The design tradeoffs Bight makes and who it's built for.
+---
+
+import { Card } from "@astrojs/starlight/components";
+
+Bight is a Discord bot framework for developers who want architecture that stays readable as the project grows.
+
+## Design Tradeoffs
+
+<Card title="Explicit composition over hidden machinery" icon="seti:plan">
+  Services and plugins are wired manually. You can trace every dependency by reading your source files. There's no auto-discovery DI container. Services, plugins, and features are wired explicitly. Commands, events, and handlers **are** loaded through filesystem discovery to ensure stability.
+</Card>
+
+<Card title="Slash-first design" icon="forward-slash">
+  The runtime, routing, and tooling are built around modern Discord interactions (slash commands, buttons, selects, modals). Legacy command patterns are supported through opt-in plugins, not as the default path.
+</Card>
+
+<Card title="Official batteries over ecosystem breadth" icon="setting">
+  Bight ships opinionated packages for common operational needs (storage adapters, schedulers, devtools, settings, i18n) rather than relying on community plugins to fill gaps.
+</Card>
+
+## Who Bight is for
+
+- TypeScript developers building interaction-heavy Discord bots
+- Teams that want shared conventions without heavy framework ceremony
+- Developers moving from scattered scripts to a maintainable architecture
+
+## When to choose something else
+
+If you need the deepest ecosystem maturity and broadest community plugin coverage today, [Sapphire](https://www.sapphirejs.dev/) is the more established choice. See [Bight vs Sapphire](/core-concepts/bight-vs-sapphire/) for a detailed comparison.

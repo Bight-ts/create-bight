@@ -1,0 +1,80 @@
+---
+title: Runtime Flow
+description: What happens when a Bight app boots, and what happens when a user triggers a command.
+---
+
+import { Steps } from "@astrojs/starlight/components";
+
+Bight's runtime has two phases: startup and execution. Both follow a fixed sequence, which makes features like preconditions, cooldowns, and maintenance mode behave predictably.
+
+## Startup
+
+When you run `pnpm start:with-deploy` or `pnpm dev`, Bight processes these steps in order before connecting to Discord:
+
+{/* prettier-ignore */}
+<Steps>
+
+1. **Instantiation**
+
+   Creates the logger and builds services defined in `src/bight.ts`.
+
+2. **Discovery**
+
+   Scans `src/commands/`, `src/interactions/`, `src/events/`, and `src/preconditions/` for handler files.
+
+3. **Feature merging**
+
+   If [feature modules](/architecture/feature-modules/) are defined, their commands and handlers merge into the routing table.
+
+4. **Plugin setup**
+
+   Registered [plugins](/architecture/plugins/) run their `setup` hooks. Plugins can add commands, preconditions, and event listeners at this stage.
+
+5. **Router attachment**
+
+   Binds the interaction and event routers to the Discord client.
+
+6. **Login**
+
+   Establishes the WebSocket connection with Discord.
+
+</Steps>
+
+## Execution
+
+When a user triggers a slash command, clicks a button, or submits a modal:
+
+{/* prettier-ignore */}
+<Steps>
+
+1. **Routing**
+
+   Bight matches the incoming Discord payload to the correct handler file.
+
+2. **Global preconditions**
+
+   Evaluates preconditions registered globally (e.g, maintenance mode).
+
+3. **Local preconditions**
+
+   Evaluates preconditions attached to the specific command or handler.
+
+4. **Environment check**
+
+   If the command is marked `devOnly`, blocks execution in production.
+
+5. **Cooldown enforcement**
+
+   Checks and enforces any configured rate limits.
+
+6. **Execution**
+
+   Runs your `execute()` handler.
+
+7. **Diagnostics**
+
+   Records the result (success, error, or denial) in the [diagnostics hub](/ops-and-diagnostics/diagnostics/).
+
+</Steps>
+
+If a precondition fails at step 2 or 3, the handler at step 6 is never reached. The [diagnostics hub](/ops-and-diagnostics/diagnostics/) still records the denial, so you can inspect what happened through the [devtools plugin](/ops-and-diagnostics/diagnostics/#the-devtools-plugin).

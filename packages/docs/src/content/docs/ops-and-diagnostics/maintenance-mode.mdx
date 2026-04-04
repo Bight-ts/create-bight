@@ -1,0 +1,44 @@
+---
+title: Maintenance Mode
+description: Block all user-facing interactions during incidents using a global precondition.
+---
+
+import { Steps } from "@astrojs/starlight/components";
+
+The `@bight-ts/plugin-ops` maintenance mode plugin injects a [global precondition](/commands-and-interactions/preconditions-and-denied/) that blocks all incoming commands, buttons, and interactions when activated. Designated developers can bypass the block to verify fixes while users receive a configurable denial message.
+
+## Setup
+
+```ts title="src/plugins/maintenance.ts"
+import { createMaintenanceModePlugin } from "@bight-ts/plugin-ops";
+
+export const maintenanceModePlugin = createMaintenanceModePlugin({
+  getState: async (context) => context.services.settings.getMaintenanceState(),
+
+  setState: async (context, state) => {
+    await context.services.settings.setMaintenanceState(state);
+  },
+
+  // Registers a /maintenance toggle command (default: false)
+  includeCommand: true,
+});
+```
+
+Add to `src/plugins/index.ts`.
+
+## How it works
+
+When maintenance mode is active:
+
+{/* prettier-ignore */}
+<Steps>
+1. Every incoming interaction hits the global precondition.
+
+2. The precondition checks the state via `getState()`.
+
+3. If active, the routing pipeline halts before `execute()` is reached.
+
+4. The user receives a denial message. Developers on the allow-list bypass the check.
+</Steps>
+
+Because the toggle persists through your settings or storage layer, maintenance mode survives bot restarts.

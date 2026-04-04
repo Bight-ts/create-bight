@@ -1,0 +1,23 @@
+{
+  "name": "bight-ts-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node ./scripts/apply-base-to-internal-links.mjs",
+    "lint": "astro check",
+    "test": "astro check",
+    "typecheck": "astro check",
+    "format": "prettier --check ."
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.38.2",
+    "astro": "^6.0.1",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
+}

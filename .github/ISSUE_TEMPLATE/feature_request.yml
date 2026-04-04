@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest an improvement for create-bight or the docs tooling
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: What should change?
+      options:
+        - create-bight
+        - docs site
+        - smoke tooling
+        - release tooling
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the workflow or behavior you want.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

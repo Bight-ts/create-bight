@@ -1,0 +1,52 @@
+---
+title: Message Commands
+description: Opt-in support for free-form text triggers via a dedicated plugin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Message commands let your bot react to specific text patterns in chat, like replying when someone says "Hello Bight". They're provided through `@bight-ts/plugin-message-commands` as an opt-in extra.
+
+## Defining a message command
+
+```ts title="src/message-commands/hello.ts"
+import { defineMessageCommand } from "@bight-ts/plugin-message-commands";
+
+export const helloMessageCommand = defineMessageCommand({
+  data: {
+    name: "hello-bight",
+    description: "Reply when someone says hello.",
+  },
+
+  match: ({ message }) => message.content.toLowerCase() === "hello bight",
+
+  async execute({ message }) {
+    await message.reply("Hello from Bight.");
+  },
+});
+```
+
+The `match` function acts as a filter. `execute` only runs when `match` returns `true`.
+
+<Aside>
+  Commands are evaluated in declaration order, and the first match wins.
+</Aside>
+
+## Registering the plugin
+
+```ts title="src/plugins/message-commands.ts"
+import { createMessageCommandsPlugin } from "@bight-ts/plugin-message-commands";
+import { helloMessageCommand } from "../message-commands/hello";
+
+export const messageCommandsPlugin = createMessageCommandsPlugin({
+  commands: [helloMessageCommand],
+});
+```
+
+Add the plugin to `src/plugins/index.ts`.
+
+## Required gateway intents
+
+Like [prefix commands](/commands-and-interactions/prefix-commands/), message commands need the `GuildMessages` and `MessageContent` intents enabled. See [Gateway Intents](/architecture/gateway-intents/).
+
+Message commands run through the same precondition and diagnostics pipeline as slash commands.

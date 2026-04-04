@@ -1,0 +1,24 @@
+{
+  "name": "bight-ts-tooling",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "pnpm --filter create-bight build && pnpm --filter bight-ts-docs build",
+    "lint": "pnpm -r --workspace-concurrency=1 --if-present lint",
+    "test": "pnpm -r --workspace-concurrency=1 --if-present test",
+    "typecheck": "pnpm -r --workspace-concurrency=1 --if-present typecheck",
+    "format": "pnpm -r --workspace-concurrency=1 --if-present format",
+    "dev:cli": "pnpm --filter create-bight dev",
+    "dev:docs": "pnpm --filter bight-ts-docs dev",
+    "smoke:cli": "pnpm --filter create-bight build && node scripts/smoke-cli.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "globals": "^16.4.0",
+    "typescript-eslint": "^8.42.0"
+  }
+}

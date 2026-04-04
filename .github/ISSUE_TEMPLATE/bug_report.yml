@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a bug in create-bight or the docs site
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: What is affected?
+      options:
+        - create-bight
+        - docs site
+        - smoke tooling
+        - multiple areas
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Relevant version
+      description: CLI version, docs deploy revision, or commit SHA.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the smallest command sequence or page path that shows the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Node version, package manager, OS, and any relevant npm or GitHub Actions details.
+    validations:
+      required: true

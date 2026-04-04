@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Fonts */
+  --sl-font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --sl-font-mono: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Headings typography */
+h1, h2, h3, h4, h5, h6, .site-title, .sl-markdown-content h1, .sl-markdown-content h2, .sl-markdown-content h3 {
+  font-family: 'Outfit', var(--sl-font);
+  letter-spacing: -0.02em;
+}
+
+/* Apply gradient text to the hero heading */
+.hero > h1 {
+  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+:root[data-theme='dark'] .hero > h1 {
+  background: linear-gradient(135deg, #fff 0%, #5865F2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+:root[data-theme='dark'] {
+  /* Bight/Discord inspired dark mode */
+  --sl-color-accent-low: #1e255e;
+  --sl-color-accent: #5865f2; /* Blurple */
+  --sl-color-accent-high: #c7cdff;
+  
+  /* Deep, space-like backgrounds */
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #e2e8f0;
+  --sl-color-gray-2: #94a3b8;
+  --sl-color-gray-3: #64748b;
+  --sl-color-gray-4: #475569;
+  --sl-color-gray-5: #1e293b;
+  --sl-color-gray-6: #0a0f1b; /* Very dark blue for borders */
+  --sl-color-black: #04060d; /* Pitch dark blue, app background */
+  
+  --sl-color-bg-nav: rgba(4, 6, 13, 0.7); /* Translucent nav for glassmorphism */
+  --sl-color-bg-sidebar: #060913;
+  --sl-color-bg: #04060d;
+  --sl-color-bg-inline-code: #131a2b;
+}
+
+:root[data-theme='light'] {
+  /* Clean, vibrant light mode */
+  --sl-color-accent-low: #e4e7ff;
+  --sl-color-accent: #5865f2;
+  --sl-color-accent-high: #2b35a3;
+  
+  --sl-color-white: #0f172a;
+  --sl-color-gray-1: #1e293b;
+  --sl-color-gray-2: #334155;
+  --sl-color-gray-3: #64748b;
+  --sl-color-gray-4: #94a3b8;
+  --sl-color-gray-5: #e2e8f0;
+  --sl-color-gray-6: #f1f5f9;
+  --sl-color-black: #ffffff;
+  
+  --sl-color-bg-nav: rgba(255, 255, 255, 0.7);
+  --sl-color-bg-sidebar: #f8fafc;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-inline-code: #f1f5f9;
+}
+
+/* Glassmorphism Header */
+header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sl-color-gray-6) !important;
+}
+
+/* Primary Action Buttons (e.g. Get Started) */
+.sl-link-button.primary {
+  background: linear-gradient(135deg, #5865F2, #7a85fa);
+  border: none;
+  box-shadow: 0 4px 14px 0 rgba(88, 101, 242, 0.39);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-family: var(--sl-font);
+}
+
+.sl-link-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
+  background: linear-gradient(135deg, #6c78fb, #8d97ff);
+}
+
+/* Code blocks rounding */
+.expressive-code .frame {
+  border-radius: 12px !important;
+  border-color: var(--sl-color-gray-5) !important;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+}
+
+/* Sidebar overrides */
+.sidebar-pane, .right-sidebar {
+  border-color: var(--sl-color-gray-6) !important;
+}
+
+/* Card hover effects */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-color: var(--sl-color-gray-5) !important;
+  background-color: var(--sl-color-bg-sidebar) !important;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.2) !important;
+  border-color: var(--sl-color-gray-4) !important;
+}

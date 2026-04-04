@@ -1,0 +1,106 @@
+---
+title: Bight.ts
+description: Bight is the Discord framework for readable, TypeScript-first bot architecture.
+template: splash
+hero:
+  tagline: The Discord framework for teams and solo builders who want readable TypeScript bot architecture from scaffold to long-term maintenance.
+  image:
+    file: ../../assets/discord.webp
+  actions:
+    - text: Quick Start
+      link: /getting-started/quick-start/
+      icon: right-arrow
+    - text: Reference
+      link: /reference/core/app-runtime/
+      icon: right-arrow
+      variant: minimal
+---
+
+import {
+  Steps,
+  Card,
+  CardGrid,
+  Tabs,
+  TabItem,
+  LinkButton,
+} from "@astrojs/starlight/components";
+
+<h2 style="margin-bottom: 2rem; margin-top: -4rem; text-align: center; font-size: 3rem;">
+  Get started now
+</h2>
+<div style="display: flex; justify-content: center; margin-bottom: 5rem;">
+  <Tabs>
+    <TabItem label="npm">```bash npm create bight ```</TabItem>
+    <TabItem label="yarn">```bash yarn create bight ```</TabItem>
+    <TabItem label="pnpm">```bash pnpm create bight ```</TabItem>
+    <TabItem label="bun">```bash bun create bight ```</TabItem>
+  </Tabs>
+</div>
+
+<CardGrid stagger >
+
+<Card title="Getting Started" icon="rocket">
+
+The shortest path to a running bot:
+
+{/* prettier-ignore */}
+<Steps>
+1. [Create a Bight project](/getting-started/quick-start/)
+
+2. [Understand the project structure](/getting-started/project-structure/)
+
+3. [Build your first command](/commands-and-interactions/slash-commands/)
+
+4. [Deploy your bot](/ops-and-diagnostics/deployment/)
+</Steps>
+
+</Card>
+
+<Card title="Support the project" icon="heart">
+
+<p style={{ marginBottom: "2rem" }}>
+  If you find Bight useful, please consider supporting its development:
+</p>
+
+<LinkButton
+  href="https://github.com/bight-ts/bight-core"
+  variant="secondary"
+  icon="star"
+  iconPlacement="start"
+  style={{
+    padding: "0.5rem 1rem",
+    marginBottom: "0.2rem",
+    borderRadius: ".2rem",
+  }}
+>
+  Star
+</LinkButton>
+<LinkButton
+  href="https://github.com/bight-ts/bight-core/blob/main/CONTRIBUTING.md"
+  variant="secondary"
+  icon="seti:github"
+  iconPlacement="start"
+  style={{
+    padding: "0.5rem 1rem",
+    marginBlock: "0.2rem",
+    borderRadius: ".2rem",
+  }}
+>
+  Contribute
+</LinkButton>
+<LinkButton
+  href="https://github.com/bight-ts/bight-core"
+  variant="secondary"
+  icon="rocket"
+  iconPlacement="start"
+  style={{
+    padding: "0.5rem 1rem",
+    marginBlock: "0.2rem",
+    borderRadius: ".2rem",
+  }}
+>
+  Share
+</LinkButton>
+
+</Card>
+</CardGrid>

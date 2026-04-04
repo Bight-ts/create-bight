@@ -1,0 +1,57 @@
+---
+title: Command Deploy Modes
+description: Guild vs global command deployment and when to use each.
+---
+
+import { Steps, Aside } from "@astrojs/starlight/components";
+
+Discord maintains its own cache of slash command metadata (names, descriptions, options). When you change any of these, you tell Discord about the update through a deployment. Bight provides two modes.
+
+## Guild mode
+
+Deploys commands to a single test guild. Updates appear in Discord within seconds.
+
+```bash
+pnpm deploy:commands:guild
+```
+
+This targets the guild ID set in `DISCORD_TEST_GUILD_ID` from your `.env`. Use this during development for instant feedback on structural changes.
+
+## Global mode
+
+Deploys commands to all guilds where the bot is installed. Discord's global cache can take up to an hour to propagate across all clients (mobile, web, desktop).
+
+```bash
+pnpm deploy:commands
+```
+
+Because of this, treat global deploys as deliberate releases.
+
+## When you need to deploy
+
+| Change | Deploy required? |
+|--------|-----------------|
+| Renamed a command or option | Yes |
+| Changed a command's description | Yes |
+| Added, removed, or reordered options | Yes |
+| Changed logic inside `execute()` | No |
+| Updated a service or helper | No |
+
+## Deployment order for production
+
+When releasing a new feature that includes structural changes:
+
+{/* prettier-ignore */}
+<Steps>
+
+1. **Deploy code first.**
+
+   Push updated runtime code to your server.
+
+2. **Deploy metadata second.**
+
+   Run `pnpm deploy:commands` after the new code is live.
+
+</Steps>
+
+This ensures the runtime can handle the new command shape the moment Discord starts sending it. Deploying metadata before code creates a window where Discord sends options your runtime doesn't expect yet.

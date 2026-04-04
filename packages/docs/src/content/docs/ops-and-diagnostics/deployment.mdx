@@ -1,0 +1,37 @@
+---
+title: Deployment
+description: The two-layer deployment model for Discord bots.
+---
+
+import { Steps, Card } from "@astrojs/starlight/components"
+
+Deploying a Discord bot involves two independent layers that must stay in sync.
+
+<Card title="Layer 1: Code" icon="seti:tsconfig">
+
+Your runtime logic. Pushing updated code to your server (Railway, a VPS, etc) restarts the Node.js process with the new `execute()` handlers, services, and plugins. The Discord UI doesn't change.
+
+</Card>
+
+<Card title="Layer 2: Metadata" icon="open-book">
+
+Your command definitions. Adding a new option or renaming a command requires syncing the updated structure with Discord's servers. Until you do, the Discord client can't render the new UI.
+
+</Card>
+
+## Deployment order
+
+Deploy code before metadata:
+
+{/* prettier-ignore */}
+<Steps>
+1. **Write and test** the feature using `pnpm deploy:commands:guild` against your test guild during development.
+
+2. **Push the runtime code** to production. The new handlers are live, waiting for the matching metadata.
+
+3. **Deploy metadata globally** with `pnpm deploy:commands`. As Discord's cache propagates (up to an hour), clients render the new command shape and the runtime handles it correctly.
+</Steps>
+
+Deploying metadata before code creates a window where Discord sends options your runtime doesn't expect, leading to crashes or silent failures.
+
+See [Command Deploy Modes](/commands-and-interactions/command-modes/) for details on guild vs global deployment.

@@ -1,0 +1,53 @@
+---
+title: Diagnostics & Devtools
+description: Built-in telemetry and the devtools plugin for inspecting runtime behavior.
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+Bight records structured diagnostic events at every stage of the runtime: command routing, precondition evaluation, cooldown enforcement, plugin execution, and error handling. This data powers the devtools plugin and can feed external monitoring tools.
+
+## The diagnostics hub
+
+The hub is an in-memory, bounded event store. It:
+
+- **Records** events (command errors, denials, task failures, plugin lifecycle)
+- **Exposes** recent events via `diagnostics.recent(limit)`
+- **Supports subscriptions** so plugins can react to events in real-time
+- **Collects snapshots** from registered diagnostic sources for point-in-time reporting
+
+Subscribers don't modify the runtime, they observe it.
+
+This keeps operational concerns (like sending metrics to Datadog, logging to a webhook, etc) out of your command logic.
+
+## The devtools plugin
+
+The scaffolded app includes `@bight-ts/plugin-devtools`, which surfaces a privileged slash command (default: `/bight-devtools`) in your test guild. It provides three views:
+
+<CardGrid stagger>
+  <Card title="Status" icon="information">
+    Loaded plugins, command/handler counts, memory usage.
+  </Card>
+  <Card title="Events" icon="rocket">
+    Recent execution attempts. If a user reports "the command didn't work",
+    check here to see what happened.
+  </Card>
+  <Card title="Reports" icon="open-book">
+    Structured snapshots from diagnostic sources (core stats, scheduler state,
+    etc).
+  </Card>
+</CardGrid>
+
+### Setup
+
+```ts title="src/plugins/devtools.ts"
+import { createDevtoolsPlugin } from "@bight-ts/plugin-devtools";
+
+export const devtoolsPlugin = createDevtoolsPlugin({
+  ownerIds: ["123456789"], // Discord user IDs allowed to use the command
+  devOnly: true, // Block in production (default: false)
+  commandName: "bight-devtools", // Customize the command name (default)
+});
+```
+
+Add to `src/plugins/index.ts`.
