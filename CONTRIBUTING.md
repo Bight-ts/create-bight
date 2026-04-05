@@ -41,7 +41,7 @@ When testing against unpublished local tarballs, export the same `BIGHT_*_PACKAG
 
 ```bash
 export BIGHT_PACKAGE_SPEC=file:/absolute/path/to/bight-ts-core-0.1.0.tgz
-export BIGHT_TOOLKIT_PACKAGE_SPEC=file:/absolute/path/to/bight-toolkit-0.1.0.tgz
+export BIGHT_TOOLKIT_PACKAGE_SPEC=file:/absolute/path/to/bight-ts-toolkit-0.2.0.tgz
 pnpm smoke:cli
 ```
 

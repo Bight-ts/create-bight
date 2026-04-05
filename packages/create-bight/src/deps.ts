@@ -1,5 +1,8 @@
 import type { CliOptions } from "./types.js";
 
+const BIGHT_CORE_VERSION = "^0.1.0";
+const BIGHT_EXTRAS_VERSION = "^0.2.0";
+
 export function getDependencies(options: CliOptions): Record<string, string> {
   const dependencies: Record<string, string> = {
     "@t3-oss/env-core": "^0.13.8",
@@ -144,11 +147,11 @@ export function getDevDependencies(options: CliOptions): Record<string, string> 
 }
 
 function resolveBightPackageSpec() {
-  return process.env.BIGHT_PACKAGE_SPEC ?? "^0.1.0";
+  return process.env.BIGHT_PACKAGE_SPEC ?? BIGHT_CORE_VERSION;
 }
 
 function resolvePackageSpec(envVar: string) {
-  return process.env[envVar] ?? "^0.1.0";
+  return process.env[envVar] ?? BIGHT_EXTRAS_VERSION;
 }
 
 function usesToolkitExtras(options: CliOptions) {
