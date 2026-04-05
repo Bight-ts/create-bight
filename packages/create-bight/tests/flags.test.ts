@@ -5,9 +5,11 @@ describe("parseFlags", () => {
   it("parses major scaffold flags", () => {
     const result = parseFlags([
       "--dir=my-bot",
+      "--template=ops-ready",
       "--storage=prisma",
       "--sql-provider=postgres",
       "--command-mode=guild",
+      "--package-manager=bun",
       "--cooldowns=false",
       "--extras=validation,dev-commands",
       "--yes",
@@ -15,9 +17,11 @@ describe("parseFlags", () => {
 
     expect(result).toEqual({
       dir: "my-bot",
+      template: "ops-ready",
       storage: "prisma",
       sqlProvider: "postgres",
       commandMode: "guild",
+      packageManager: "bun",
       cooldowns: false,
       extras: ["validation", "dev-commands"],
       yes: true,

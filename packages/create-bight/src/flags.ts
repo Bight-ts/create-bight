@@ -1,4 +1,12 @@
-import type { CliOptions, ExtraName, KeyvStore, SqlProvider, StorageKind } from "./types.js";
+import type {
+  CliOptions,
+  ExtraName,
+  KeyvStore,
+  PackageManager,
+  SqlProvider,
+  StorageKind,
+  TemplateName,
+} from "./types.js";
 
 export function parseFlags(argv: string[]): Partial<CliOptions> {
   const output: Partial<CliOptions> = {};
@@ -24,6 +32,9 @@ export function parseFlags(argv: string[]): Partial<CliOptions> {
       case "bot-name":
         output.botName = value;
         break;
+      case "template":
+        output.template = value as TemplateName;
+        break;
       case "storage":
         output.storage = value as StorageKind;
         break;
@@ -38,6 +49,9 @@ export function parseFlags(argv: string[]): Partial<CliOptions> {
         break;
       case "cooldowns":
         output.cooldowns = parseBoolean(value);
+        break;
+      case "package-manager":
+        output.packageManager = value as PackageManager;
         break;
       case "extras":
         output.extras = value

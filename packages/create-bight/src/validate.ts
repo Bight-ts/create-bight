@@ -1,8 +1,21 @@
 import { resolve } from "node:path";
 import type { CliOptions } from "./types.js";
+import { scaffoldTemplates } from "./templates.js";
 import { isDirectoryEmpty, pathExists } from "./utils.js";
 
 export async function validateOptions(options: CliOptions): Promise<void> {
+  if (!scaffoldTemplates.some((template) => template.value === options.template)) {
+    throw new Error(
+      "--template must be one of: starter, minimal, hybrid, ops-ready.",
+    );
+  }
+
+  if (!["pnpm", "npm", "yarn", "bun"].includes(options.packageManager)) {
+    throw new Error(
+      "--package-manager must be one of: pnpm, npm, yarn, bun.",
+    );
+  }
+
   if (
     (options.storage === "drizzle" || options.storage === "prisma") &&
     !options.sqlProvider

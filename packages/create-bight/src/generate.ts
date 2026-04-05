@@ -4,6 +4,10 @@ import { promisify } from "node:util";
 import { dirname, join, resolve } from "node:path";
 import { copyTemplateDir, ensureDir, pathExists } from "./utils.js";
 import { templatesRoot } from "./config.js";
+import {
+  formatRunCommand,
+  getPackageManagerInstallCommand,
+} from "./package-manager.js";
 import type { CliOptions } from "./types.js";
 import { buildPackageJson } from "./package-json.js";
 
@@ -34,7 +38,8 @@ export async function generateProject(options: CliOptions): Promise<string> {
   }
 
   if (options.install) {
-    await execFileAsync("pnpm", ["install"], { cwd: targetDir });
+    const installCommand = getPackageManagerInstallCommand(options.packageManager);
+    await execFileAsync(installCommand.command, installCommand.args, { cwd: targetDir });
   }
 
   return targetDir;
@@ -148,14 +153,105 @@ function createReplacements(options: CliOptions): Record<string, string> {
 }
 
 function createReadme(options: CliOptions): string {
+  const devCommand = formatRunCommand(options.packageManager, "dev");
+  const buildCommand = formatRunCommand(options.packageManager, "build");
+  const startCommand = formatRunCommand(options.packageManager, "start");
+  const startWithDeployCommand = formatRunCommand(
+    options.packageManager,
+    "start:with-deploy",
+  );
+  const deployCommandsCommand = formatRunCommand(
+    options.packageManager,
+    "deploy:commands",
+  );
   const storageGuidance =
     options.storage === "drizzle"
-      ? "- use `context.services.db` and `context.services.dbTables` for your real Drizzle queries; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
+      ? "use `context.services.db` and `context.services.dbTables` for your real Drizzle queries; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
       : options.storage === "prisma"
-        ? "- use `context.services.prisma` for your real Prisma queries; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
+        ? "use `context.services.prisma` for your real Prisma queries; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
         : options.storage === "mongoose"
-          ? "- use `context.services.connectToDatabase` and `context.services.databaseModels` for your real Mongoose work; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
-          : "- wire persistence in `src/storage/adapter.ts` and consume it through `src/storage/index.ts`";
+        ? "use `context.services.connectToDatabase` and `context.services.databaseModels` for your real Mongoose work; keep `src/storage/adapter.ts` for Bight's lightweight settings/state layer"
+        : "wire persistence in `src/storage/adapter.ts` and consume it through `src/storage/index.ts`";
+  const selectedExtras =
+    options.extras.length > 0
+      ? options.extras.map((extra) => `\`${extra}\``).join(", ")
+      : "none";
+  const whereToStart = [
+    "- put slash commands in `src/commands/`",
+    "- add app-owned integrations in `src/services/index.ts`",
+    "- consume Bight's small config/state storage through `src/storage/index.ts`",
+    `- ${storageGuidance}`,
+    "- register lifecycle work in `src/plugins/index.ts`",
+    "- treat `src/bight.ts` as the framework seam you usually do not need to edit first",
+    "- add larger app slices in `src/features/` later if the project grows",
+  ];
+  const selectedFeatureNotes: string[] = [];
+
+  if (options.extras.includes("i18n")) {
+    whereToStart.push("- edit localization catalogs in `src/i18n/catalog.ts`");
+  }
+
+  if (options.extras.includes("settings")) {
+    whereToStart.push("- adjust Bight-backed guild settings in `src/services/settings.ts`");
+  }
+
+  if (options.extras.includes("message-commands")) {
+    whereToStart.push("- add free-form message triggers in `src/message-commands/`");
+  }
+
+  if (options.extras.includes("prefix-commands")) {
+    whereToStart.push("- add classic prefix commands in `src/prefix-commands/`");
+  }
+
+  if (options.extras.includes("startup-checks")) {
+    whereToStart.push("- tune startup validation in `src/plugins/startup-checks.ts`");
+  }
+
+  if (options.storage === "drizzle" || options.storage === "mongoose") {
+    whereToStart.push("- adjust database wiring in `src/db/` if your backend setup changes");
+  }
+
+  if (options.storage === "prisma") {
+    whereToStart.push(
+      "- adjust Prisma wiring in `prisma/schema.prisma` and `src/db/client.ts` when your data model grows",
+    );
+  }
+
+  if (usesToolkitExtras(options.extras)) {
+    selectedFeatureNotes.push(
+      "Selected toolkit extras install `@bight-ts/toolkit`. Use it for lightweight cache, time, and validation helpers before creating one-off app snippets.",
+    );
+  }
+
+  if (options.extras.includes("scheduler")) {
+    selectedFeatureNotes.push(
+      "Selected scheduler scaffolds `@bight-ts/plugin-scheduler` in persistent mode using your app storage.",
+    );
+  }
+
+  if (options.extras.includes("devtools")) {
+    selectedFeatureNotes.push(
+      "Selected devtools scaffolds `@bight-ts/plugin-devtools`. It is enabled by default in development and adds `/bight-devtools`.",
+    );
+  }
+
+  if (options.extras.includes("i18n")) {
+    selectedFeatureNotes.push(
+      "Selected localization scaffolds `@bight-ts/i18n` as an app-owned service plus an optional diagnostics plugin.",
+    );
+  }
+
+  if (options.extras.includes("settings")) {
+    selectedFeatureNotes.push(
+      "Selected settings scaffolds `@bight-ts/settings` so app config uses a namespaced service instead of raw storage calls.",
+    );
+  }
+
+  if (options.extras.includes("startup-checks")) {
+    selectedFeatureNotes.push(
+      "Selected startup checks scaffolds `@bight-ts/plugin-ops` so env, intents, and required services are validated through a normal plugin.",
+    );
+  }
 
   return `# ${options.name}
 
@@ -163,77 +259,27 @@ Generated with Bight, the modern Discord-first framework for readable TypeScript
 
 ## Scripts
 
-- \`pnpm dev\`: run the bot in watch mode
-- \`pnpm build\`: compile TypeScript
-- \`pnpm start\`: run the compiled bot
-- \`pnpm start:with-deploy\`: register commands, build, then start
-- \`pnpm deploy:commands\`: deploy commands using the default mode
+- \`${devCommand}\`: run the bot in watch mode
+- \`${buildCommand}\`: compile TypeScript
+- \`${startCommand}\`: run the compiled bot
+- \`${startWithDeployCommand}\`: register commands, build, then start
+- \`${deployCommandsCommand}\`: deploy commands using the default mode
 
 ## Selected options
 
+- template: \`${options.template}\`
 - storage: \`${options.storage}\`
 - command mode: \`${options.commandMode}\`
+- package manager: \`${options.packageManager}\`
 - cooldowns: \`${options.cooldowns ? "enabled" : "disabled"}\`
-- extras: ${options.extras.length > 0 ? options.extras.map((extra) => `\`${extra}\``).join(", ") : "none"
-    }
+- extras: ${selectedExtras}
 
 ## Where To Start
 
-- put slash commands in \`src/commands/\`
-- add app-owned integrations in \`src/services/index.ts\`
-- consume Bight's small config/state storage through \`src/storage/index.ts\`
-- ${storageGuidance}
-- register lifecycle work in \`src/plugins/index.ts\`
-- treat \`src/bight.ts\` as the framework seam you usually do not need to edit first
-- add larger app slices in \`src/features/\` later if the project grows
-${options.extras.includes("i18n")
-      ? "- edit localization catalogs in `src/i18n/catalog.ts`"
-      : ""}
-${options.extras.includes("settings")
-      ? "- adjust Bight-backed guild settings in `src/services/settings.ts`"
-      : ""}
-${options.extras.includes("message-commands")
-      ? "- add free-form message triggers in `src/message-commands/`"
-      : ""}
-${options.extras.includes("prefix-commands")
-      ? "- add classic prefix commands in `src/prefix-commands/`"
-      : ""}
-${options.extras.includes("startup-checks")
-      ? "- tune startup validation in `src/plugins/startup-checks.ts`"
-      : ""}
-${options.storage === "drizzle" || options.storage === "mongoose"
-      ? "- adjust database wiring in `src/db/` if your backend setup changes"
-      : ""}
-${options.storage === "prisma"
-      ? "- adjust Prisma wiring in `prisma/schema.prisma` and `src/db/client.ts` when your data model grows"
-      : ""}
+${whereToStart.join("\n")}
 
-Start by copying \`.env.example\` to \`.env\`, filling in the Discord credentials, then run \`pnpm start:with-deploy\`.
-${usesToolkitExtras(options.extras)
-      ? `
-Selected toolkit extras install \`@bight-ts/toolkit\`. Use it for lightweight cache, time, and validation helpers before creating one-off app snippets.
-`
-      : ""}${options.extras.includes("scheduler")
-        ? `
-Selected scheduler scaffolds \`@bight-ts/plugin-scheduler\` in persistent mode using your app storage.
-`
-        : ""}${options.extras.includes("devtools")
-          ? `
-Selected devtools scaffolds \`@bight-ts/plugin-devtools\`. It is enabled by default in development and adds \`/bight-devtools\`.
-`
-          : ""}${options.extras.includes("i18n")
-            ? `
-Selected localization scaffolds \`@bight-ts/i18n\` as an app-owned service plus an optional diagnostics plugin.
-`
-            : ""}${options.extras.includes("settings")
-              ? `
-Selected settings scaffolds \`@bight-ts/settings\` so app config uses a namespaced service instead of raw storage calls.
-`
-              : ""}${options.extras.includes("startup-checks")
-                ? `
-Selected startup checks scaffolds \`@bight-ts/plugin-ops\` so env, intents, and required services are validated through a normal plugin.
-`
-                : ""}`;
+Start by copying \`.env.example\` to \`.env\`, filling in the Discord credentials, then run \`${startWithDeployCommand}\`.
+${selectedFeatureNotes.length > 0 ? `\n\n${selectedFeatureNotes.join("\n\n")}` : ""}`;
 }
 
 function createServicesIndex(options: CliOptions): string {

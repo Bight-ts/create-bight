@@ -6,7 +6,7 @@ export function buildPackageJson(options: CliOptions) {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/src/index.js",
-    "start:with-deploy": "pnpm run deploy:commands && pnpm run build && pnpm run start",
+    "start:with-deploy": "tsx scripts/deploy-commands.ts && tsc -p tsconfig.json && tsc-alias -p tsconfig.json && node dist/src/index.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "typecheck": "tsc -p tsconfig.json --noEmit",

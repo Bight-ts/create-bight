@@ -8,17 +8,22 @@ describe("buildPackageJson", () => {
       name: "Demo Bot",
       packageName: "demo-bot",
       botName: "Demo Bot",
+      template: "starter",
       storage: "drizzle",
       sqlProvider: "sqlite",
       commandMode: "guild",
       cooldowns: true,
       extras: [],
+      packageManager: "pnpm",
       install: false,
       git: false,
       yes: true,
     });
 
-    expect(result.scripts["start:with-deploy"]).toContain("deploy:commands");
+    expect(result.scripts["start:with-deploy"]).toContain(
+      "tsx scripts/deploy-commands.ts",
+    );
+    expect(result.scripts["start:with-deploy"]).not.toContain("pnpm");
     expect(result.scripts["db:generate"]).toBeDefined();
     expect(result.dependencies["@bight-ts/storage-drizzle"]).toBeDefined();
     expect(result.dependencies["drizzle-orm"]).toBeDefined();
@@ -31,10 +36,12 @@ describe("buildPackageJson", () => {
       name: "Demo Bot",
       packageName: "demo-bot",
       botName: "Demo Bot",
+      template: "ops-ready",
       storage: "json",
       commandMode: "guild",
       cooldowns: true,
       extras: ["settings", "startup-checks"],
+      packageManager: "pnpm",
       install: false,
       git: false,
       yes: true,
@@ -42,5 +49,6 @@ describe("buildPackageJson", () => {
 
     expect(result.dependencies["@bight-ts/settings"]).toBeDefined();
     expect(result.dependencies["@bight-ts/plugin-ops"]).toBeDefined();
+    expect(result.dependencies["@bight-ts/plugin-ops"]).toBe("^0.2.0");
   });
 });
